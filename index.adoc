@@ -1,0 +1,59 @@
+= Processamento Digital de Imagens
+Doc Writer <Matheus Pessoa - matheus.pessoa16@gmail.com, Genilson Filho - genilson974@gmail.com>
+:toc: left
+
+NOTE: Implementações dos Códigos da disciplina PDI.
+Todos os códigos são livres.
+
+
+
+
+== Código "Troca Regiões" e "Negativo"
+
+A primeira parte da atividade foi implementar dois códigos que pudessem mostrar o negativo de uma região selecionada
+na imagem e que trocasse os quadrantes de posição;
+
+.Resultado do "Negativo"
+image::img/negativo.png[Negativo, 400, 400]
+
+=== Código Negativo
+[source, cpp]
+----
+include::codes/Trabalho2/regions.cpp[]
+----
+
+.Resultado do "Troca Regiões"
+image::img/trocaregioes.png[Troca Regiões, 300, 300]
+
+
+=== Código Troca Regiões
+[source, cpp]
+----
+include::codes/Trabalho2/trocaregioes.cpp[]
+----
+
+== Histogramas (Equalização e Motion Detector)
+
+Os códigos aqui não estão apresentando a saída pois são streams de vídeos da webcam. Porém, pode-se compilar os códigos usando
+o arquivo Makefile.
+
+No código de equalização bastou usar a função _equalizeHist()_ da biblioteca OpenCV passando as matrizes de fonte e de destino.
+
+=== Código Equalização
+[source, cpp]
+----
+include::codes/histograma/equalizacao.cpp[]
+----
+
+
+No _motion detector_ dois histogramas são comparados a todo instante para determinar se há diferenças entre eles. Dentro do loop foi inserido um _delay()_ na forma de um laço contado, de forma que houvesse um tempo entre o cálculo dos dois histogramas (permitindo verificar se houve mudanças entre o primeiro e o segundo).
+Após isso, foi usada a função _compareHist()_ para saber o grau de correlação entre os dois histogramas calculados. Apenas um canal foi usado.
+
+=== Código Motion Detector
+[source, cpp]
+----
+include::codes/histograma/motiondetector.cpp[]
+----
+
+
+The page to my repository is https://nerdroid.github.io[Github Nerdroid]

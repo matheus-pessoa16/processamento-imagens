@@ -1,0 +1,12 @@
+/tmp/cchyAE1H.o: In function `main':
+hello.cpp:(.text+0x84): undefined reference to `cv::imread(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int)'
+hello.cpp:(.text+0xdd): undefined reference to `cv::_InputArray::_InputArray(cv::Mat const&)'
+hello.cpp:(.text+0x122): undefined reference to `cv::imshow(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, cv::_InputArray const&)'
+hello.cpp:(.text+0x14a): undefined reference to `cv::waitKey(int)'
+/tmp/cchyAE1H.o: In function `cv::Mat::~Mat()':
+hello.cpp:(.text._ZN2cv3MatD2Ev[_ZN2cv3MatD5Ev]+0x39): undefined reference to `cv::fastFree(void*)'
+/tmp/cchyAE1H.o: In function `cv::Mat::operator=(cv::Mat const&)':
+hello.cpp:(.text._ZN2cv3MataSERKS0_[_ZN2cv3MataSERKS0_]+0x111): undefined reference to `cv::Mat::copySize(cv::Mat const&)'
+/tmp/cchyAE1H.o: In function `cv::Mat::release()':
+hello.cpp:(.text._ZN2cv3Mat7releaseEv[_ZN2cv3Mat7releaseEv]+0x47): undefined reference to `cv::Mat::deallocate()'
+collect2: error: ld returned 1 exit status
