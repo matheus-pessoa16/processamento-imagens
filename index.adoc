@@ -34,6 +34,16 @@ image::img/trocaregioes.png[Troca Regiões, 300, 300]
 include::codes/Trabalho2/trocaregioes.cpp[]
 ----
 
+=== Código Labeling
+[source, cpp]
+----
+include::codes/questao4/labeling.cpp[]
+----
+
+.Resultado do "Labeling"
+image::img/tela-label1.png[Labeling, 200, 200]
+image::img/tela-label2.png[Contagem, 500, 500]
+
 == Histogramas (Equalização e Motion Detector)
 
 Os códigos aqui não estão apresentando a saída pois são streams de vídeos da webcam. Porém, pode-se compilar os códigos usando
@@ -56,6 +66,21 @@ Após isso, foi usada a função _compareHist()_ para saber o grau de correlaç�
 ----
 include::codes/histograma/motiondetector.cpp[]
 ----
+
+
+
+=== Código Filtro Espacial I
+
+O resultado do filtro espacial abaixo é apenas do Laplaciano. Entretando, para ver os demais filtros, basta complilar o código
+e executá-los.
+
+[source, cpp]
+----
+include::codes/questao6/filtroespacial.cpp[]
+----
+
+.Resultado do "Filtro Espacial" para o Laplaciano
+image::img/filtroespacial.png[Laplaciano, 800, 600]
 
 
 The page to my repository is https://nerdroid.github.io[Github Nerdroid]

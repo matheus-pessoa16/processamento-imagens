@@ -126,7 +126,7 @@ int main(int argvc, char** argv){
                   mask = Mat(3, 3, CV_32F, gauss);
                   scaleAdd(mask, 1/16.0, Mat::zeros(3,3,CV_32F), mask1);
                   mask = mask1;
-                  printmask(mask)
+                  printmask(mask);
                   break;
             case 'h':
                 menu();

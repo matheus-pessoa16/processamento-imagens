@@ -12,7 +12,7 @@ int main(int argc, char** argv){
 	image = imread(argv[1],CV_LOAD_IMAGE_GRAYSCALE);
 
 	if(!image.data){
-		std::cout << "imagem nao carregou corretamente\n";
+		cout << "imagem nao carregou corretamente\n";
 		return(-1);
 	}
 	width=image.size().width; //largura

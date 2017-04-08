@@ -524,12 +524,14 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel2">
 <li><a href="#_código_negativo">Código Negativo</a></li>
 <li><a href="#_código_troca_regiões">Código Troca Regiões</a></li>
+<li><a href="#_código_labeling">Código Labeling</a></li>
 </ul>
 </li>
 <li><a href="#_histogramas_equalização_e_motion_detector">Histogramas (Equalização e Motion Detector)</a>
 <ul class="sectlevel2">
 <li><a href="#_código_equalização">Código Equalização</a></li>
 <li><a href="#_código_motion_detector">Código Motion Detector</a></li>
+<li><a href="#_código_filtro_espacial_i">Código Filtro Espacial I</a></li>
 </ul>
 </li>
 </ul>
@@ -661,6 +663,103 @@ na imagem e que trocasse os quadrantes de posição;</p>
     waitKey();
     <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_código_labeling">Código Labeling</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv){
+        Mat image, mask;
+        <span class="predefined-type">int</span> width, height;
+
+        CvPoint p;
+        image = imread(argv[<span class="integer">1</span>],CV_LOAD_IMAGE_GRAYSCALE);
+
+        <span class="keyword">if</span>(!image.data){
+                cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">imagem nao carregou corretamente</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+                <span class="keyword">return</span>(-<span class="integer">1</span>);
+        }
+        width=image.size().width; <span class="comment">//largura</span>
+        height=image.size().height; <span class="comment">//altura</span>
+
+        p.x=<span class="integer">0</span>;
+        p.y=<span class="integer">0</span>;
+        <span class="comment">// elimina as figuras que estão encostada nas bordas</span>
+        <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; width; i++) {
+                image.at&lt;uchar&gt;(i, height -<span class="integer">1</span>) = <span class="integer">255</span>;
+                image.at&lt;uchar&gt;(i, <span class="integer">0</span>) = <span class="integer">255</span>;
+        }
+
+        <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; height; i++) {
+                image.at&lt;uchar&gt;(<span class="integer">0</span>, i) = <span class="integer">255</span>;
+                image.at&lt;uchar&gt;(width -<span class="integer">1</span>, i) = <span class="integer">255</span>;
+        }
+
+        <span class="comment">//pinta as figuras da borda de pret0</span>
+        floodFill(image, p, <span class="integer">0</span>);
+        <span class="comment">//mudo o background da imagem/</span>
+        floodFill(image, p, <span class="integer">100</span>); <span class="comment">//background</span>
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
+        imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">labeling.png</span><span class="delimiter">&quot;</span></span>, image);
+        waitKey();
+
+        <span class="comment">// econtro primeiro as figuras nas imagens</span>
+        <span class="predefined-type">int</span> qtdTotal = <span class="integer">0</span>;
+        <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; height; i++) {
+                <span class="keyword">for</span> (<span class="predefined-type">int</span> j = <span class="integer">0</span>; j &lt; width; j++) {
+                        <span class="comment">// verifico se o ponto econtrado é branco e se ele o seu vizinho anterior a ele é da cor do background, se sim mudo a cor do msm</span>
+                        <span class="keyword">if</span> (image.at&lt;uchar&gt;(i, j) == <span class="integer">255</span> &amp;&amp; image.at&lt;uchar&gt;(i-<span class="integer">1</span>, j) == <span class="integer">100</span> ) {
+                        p.x = j;
+                        p.y = i;
+                        floodFill(image, p, <span class="integer">150</span>); <span class="comment">//itens encontrados</span>
+                        qtdTotal++;
+                        }
+                }
+        }
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Quantidade de objetos </span><span class="delimiter">&quot;</span></span>&lt;&lt; qtdTotal &lt;&lt; endl;
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
+        imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">labeling.png</span><span class="delimiter">&quot;</span></span>, image);
+        waitKey();
+
+        <span class="predefined-type">int</span> qtdTotalBolhas = <span class="integer">0</span>;
+        <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; height; i++)
+        {
+                <span class="keyword">for</span> (<span class="predefined-type">int</span> j = <span class="integer">0</span>; j &lt; width; j++)
+                {        <span class="comment">// procuro os únicos intens brancos que restou na imagem (esses são as bolhas.)</span>
+                        <span class="keyword">if</span> (image.at&lt;uchar&gt;(i,j) == <span class="integer">255</span> )
+                        {
+                                p.x = j;
+                                p.y = i;
+                                floodFill(image, p, <span class="integer">50</span>);
+                                qtdTotalBolhas ++;
+                        }
+                }
+        }
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Quantidade de bolhas nos objetos </span><span class="delimiter">&quot;</span></span> &lt;&lt; qtdTotalBolhas &lt;&lt; endl;
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, image);
+        imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">labeling.png</span><span class="delimiter">&quot;</span></span>, image);
+        waitKey();
+        <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="img/tela-label1.png" alt="Labeling" width="200" height="200">
+</div>
+<div class="title">Figure 3. Resultado do "Labeling"</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="img/tela-label2.png" alt="Contagem" width="500" height="500">
 </div>
 </div>
 </div>
@@ -803,6 +902,177 @@ Após isso, foi usada a função <em>compareHist()</em> para saber o grau de cor
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_código_filtro_espacial_i">Código Filtro Espacial I</h3>
+<div class="paragraph">
+<p>O resultado do filtro espacial abaixo é apenas do Laplaciano. Entretando, para ver os demais filtros, basta complilar o código
+e executá-los.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="directive">void</span> printmask(Mat &amp;m){
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i&lt;m.size().height; i++){
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> j=<span class="integer">0</span>; j&lt;m.size().width; j++){
+            cout &lt;&lt; m.at&lt;<span class="predefined-type">float</span>&gt;(i,j) &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">,</span><span class="delimiter">&quot;</span></span>;
+        }
+        cout &lt;&lt; endl;
+    }
+}
+
+<span class="directive">void</span> menu(){
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="content">pressione a tecla para ativar o filtro: </span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">a - calcular modulo</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">m - media</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">g - gauss</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">v - vertical</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">h - horizontal</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">l - laplaciano</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">b - Gaussiano Laplaciano</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>
+            <span class="string"><span class="delimiter">&quot;</span><span class="content">esc - sair</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;
+}
+
+Mat applyMask(Mat cap, Mat mask, <span class="predefined-type">int</span> absolut) {
+    Mat frame, frame32f, frameFiltered, result;
+    cvtColor(cap, frame, CV_BGR2GRAY);
+    flip(frame, frame, <span class="integer">1</span>);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">original</span><span class="delimiter">&quot;</span></span>, frame);
+    frame.convertTo(frame32f, CV_32F);
+    filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(<span class="integer">1</span>,<span class="integer">1</span>), <span class="integer">0</span>);
+    <span class="keyword">if</span>(absolut){
+        frameFiltered=abs(frameFiltered);
+    }
+    frameFiltered.convertTo(result, CV_8U);
+
+    <span class="keyword">return</span> result;
+}
+
+Mat applyGausLaplace(Mat cap, Mat maskGaus, Mat maskLap, <span class="predefined-type">int</span> absolut) {
+    Mat frame, frame32f, frameFilteredGaus, frameFilteredLaplace, result;
+    cvtColor(cap, frame, CV_BGR2GRAY);
+    flip(frame, frame, <span class="integer">1</span>);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">original</span><span class="delimiter">&quot;</span></span>, frame);
+    frame.convertTo(frame32f, CV_32F);
+    filter2D(frame32f, frameFilteredGaus, frame32f.depth(), maskGaus, Point(<span class="integer">1</span>,<span class="integer">1</span>), <span class="integer">0</span>);
+    <span class="comment">//Apply Laplace</span>
+    filter2D(frameFilteredGaus, frameFilteredLaplace, frameFilteredGaus.depth(), maskLap, Point(<span class="integer">1</span>,<span class="integer">1</span>), <span class="integer">0</span>);
+    <span class="keyword">if</span>(absolut){
+        frameFilteredLaplace=abs(frameFilteredLaplace);
+    }
+    frameFilteredLaplace.convertTo(result, CV_8U);
+
+    <span class="keyword">return</span> result;
+}
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argvc, <span class="predefined-type">char</span>** argv){
+    VideoCapture video;
+    <span class="predefined-type">float</span> media[] = {<span class="integer">1</span>,<span class="integer">1</span>,<span class="integer">1</span>,
+                     <span class="integer">1</span>,<span class="integer">1</span>,<span class="integer">1</span>,
+                     <span class="integer">1</span>,<span class="integer">1</span>,<span class="integer">1</span>};
+    <span class="predefined-type">float</span> gauss[] = {<span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">1</span>,
+                     <span class="integer">2</span>,<span class="integer">4</span>,<span class="integer">2</span>,
+                     <span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">1</span>};
+    <span class="predefined-type">float</span> horizontal[]={-<span class="integer">1</span>,<span class="integer">0</span>,<span class="integer">1</span>,
+                        -<span class="integer">2</span>,<span class="integer">0</span>,<span class="integer">2</span>,
+                        -<span class="integer">1</span>,<span class="integer">0</span>,<span class="integer">1</span>};
+    <span class="predefined-type">float</span> vertical[]={-<span class="integer">1</span>,-<span class="integer">2</span>,-<span class="integer">1</span>,
+                      <span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>,
+                      <span class="integer">1</span>,<span class="integer">2</span>,<span class="integer">1</span>};
+    <span class="predefined-type">float</span> laplacian[]={<span class="integer">0</span>,-<span class="integer">1</span>,<span class="integer">0</span>,
+                       -<span class="integer">1</span>,<span class="integer">4</span>,-<span class="integer">1</span>,
+                       <span class="integer">0</span>,-<span class="integer">1</span>,<span class="integer">0</span>};
+
+    Mat mask(<span class="integer">3</span>,<span class="integer">3</span>,CV_32F), mask1;
+    Mat result, result1;
+    <span class="predefined-type">double</span> width, height, min, max;
+    <span class="predefined-type">int</span> absolut;
+    <span class="predefined-type">char</span> key, lastKey;
+
+    video.open(<span class="integer">0</span>);
+    <span class="keyword">if</span>(!video.isOpened())
+        <span class="keyword">return</span> -<span class="integer">1</span>;
+    width=video.get(CV_CAP_PROP_FRAME_WIDTH);
+    height=video.get(CV_CAP_PROP_FRAME_HEIGHT);
+    std::cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">largura=</span><span class="delimiter">&quot;</span></span> &lt;&lt; width &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;;
+    std::cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">altura =</span><span class="delimiter">&quot;</span></span> &lt;&lt; height&lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="delimiter">&quot;</span></span>;;
+
+    namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtroespacial</span><span class="delimiter">&quot;</span></span>,<span class="integer">1</span>);
+
+    mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, media);
+    scaleAdd(mask, <span class="integer">1</span>/<span class="float">9</span><span class="float">.0</span>, Mat::zeros(<span class="integer">3</span>,<span class="integer">3</span>,CV_32F), mask1);
+    swap(mask, mask1);
+    absolut=<span class="integer">1</span>; <span class="comment">// calcs abs of the image</span>
+
+    menu();
+    Mat cap;
+    <span class="keyword">for</span>(;;){
+        video &gt;&gt; cap;
+        <span class="keyword">if</span> (lastKey == <span class="char">'g'</span>) {
+            Mat maskLaplacian = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, laplacian);
+            result = applyGausLaplace(cap, mask, maskLaplacian, absolut);
+        } <span class="keyword">else</span> {
+            result = applyMask(cap, mask, absolut);
+        }
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">filtroespacial</span><span class="delimiter">&quot;</span></span>, result);
+        key = (<span class="predefined-type">char</span>) waitKey(<span class="integer">10</span>);
+        <span class="keyword">if</span>( key == <span class="integer">27</span> ) <span class="keyword">break</span>; <span class="comment">// esc pressed!</span>
+        <span class="keyword">switch</span>(key){
+            <span class="keyword">case</span> <span class="char">'a'</span>:
+                menu();
+                absolut=!absolut;
+                <span class="keyword">break</span>;
+            <span class="keyword">case</span> <span class="char">'m'</span>:
+                menu();
+                mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, media);
+                scaleAdd(mask, <span class="integer">1</span>/<span class="float">9</span><span class="float">.0</span>, Mat::zeros(<span class="integer">3</span>,<span class="integer">3</span>,CV_32F), mask1);
+                mask = mask1;
+                printmask(mask);
+                <span class="keyword">break</span>;
+            <span class="keyword">case</span> <span class="char">'g'</span>:
+                  menu();
+                  mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, gauss);
+                  scaleAdd(mask, <span class="integer">1</span>/<span class="integer">1</span><span class="float">6</span><span class="float">.0</span>, Mat::zeros(<span class="integer">3</span>,<span class="integer">3</span>,CV_32F), mask1);
+                  mask = mask1;
+                  printmask(mask);
+                  <span class="keyword">break</span>;
+            <span class="keyword">case</span> <span class="char">'h'</span>:
+                menu();
+                mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, horizontal);
+                printmask(mask);
+                <span class="keyword">break</span>;
+            <span class="keyword">case</span> <span class="char">'v'</span>:
+                menu();
+                mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, vertical);
+                printmask(mask);
+                <span class="keyword">break</span>;
+            <span class="keyword">case</span> <span class="char">'l'</span>:
+                menu();
+                mask = Mat(<span class="integer">3</span>, <span class="integer">3</span>, CV_32F, laplacian);
+                printmask(mask);
+                <span class="keyword">break</span>;
+            <span class="keyword">default</span>:
+                <span class="keyword">break</span>;
+        }
+        <span class="keyword">if</span> (key != -<span class="integer">1</span>) {
+            lastKey = key;
+        }
+    }
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="img/filtroespacial.png" alt="Laplaciano" width="800" height="600">
+</div>
+<div class="title">Figure 4. Resultado do "Filtro Espacial" para o Laplaciano</div>
+</div>
 <div class="paragraph">
 <p>The page to my repository is <a href="https://nerdroid.github.io">Github Nerdroid</a></p>
 </div>
@@ -812,7 +1082,7 @@ Após isso, foi usada a função <em>compareHist()</em> para saber o grau de cor
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-04-08 00:30:30 BRT
+Last updated 2017-04-08 00:59:00 BRT
 </div>
 </div>
 </body>
