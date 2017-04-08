@@ -1,5 +1,7 @@
 = Processamento Digital de Imagens
 Doc Writer <Matheus Pessoa - matheus.pessoa16@gmail.com, Genilson Filho - genilson974@gmail.com>
+:source-highlighter: coderay
+:listing-caption: Listing
 :toc: left
 
 NOTE: Implementações dos Códigos da disciplina PDI.

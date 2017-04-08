@@ -418,6 +418,97 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
+<style>
+/* Stylesheet for CodeRay to match GitHub theme | MIT License | http://foundation.zurb.com */
+/*pre.CodeRay {background-color:#f7f7f8;}*/
+.CodeRay .line-numbers{border-right:1px solid #d8d8d8;padding:0 0.5em 0 .25em}
+.CodeRay span.line-numbers{display:inline-block;margin-right:.5em;color:rgba(0,0,0,.3)}
+.CodeRay .line-numbers strong{color:rgba(0,0,0,.4)}
+table.CodeRay{border-collapse:separate;border-spacing:0;margin-bottom:0;border:0;background:none}
+table.CodeRay td{vertical-align: top;line-height:1.45}
+table.CodeRay td.line-numbers{text-align:right}
+table.CodeRay td.line-numbers>pre{padding:0;color:rgba(0,0,0,.3)}
+table.CodeRay td.code{padding:0 0 0 .5em}
+table.CodeRay td.code>pre{padding:0}
+.CodeRay .debug{color:#fff !important;background:#000080 !important}
+.CodeRay .annotation{color:#007}
+.CodeRay .attribute-name{color:#000080}
+.CodeRay .attribute-value{color:#700}
+.CodeRay .binary{color:#509}
+.CodeRay .comment{color:#998;font-style:italic}
+.CodeRay .char{color:#04d}
+.CodeRay .char .content{color:#04d}
+.CodeRay .char .delimiter{color:#039}
+.CodeRay .class{color:#458;font-weight:bold}
+.CodeRay .complex{color:#a08}
+.CodeRay .constant,.CodeRay .predefined-constant{color:#008080}
+.CodeRay .color{color:#099}
+.CodeRay .class-variable{color:#369}
+.CodeRay .decorator{color:#b0b}
+.CodeRay .definition{color:#099}
+.CodeRay .delimiter{color:#000}
+.CodeRay .doc{color:#970}
+.CodeRay .doctype{color:#34b}
+.CodeRay .doc-string{color:#d42}
+.CodeRay .escape{color:#666}
+.CodeRay .entity{color:#800}
+.CodeRay .error{color:#808}
+.CodeRay .exception{color:inherit}
+.CodeRay .filename{color:#099}
+.CodeRay .function{color:#900;font-weight:bold}
+.CodeRay .global-variable{color:#008080}
+.CodeRay .hex{color:#058}
+.CodeRay .integer,.CodeRay .float{color:#099}
+.CodeRay .include{color:#555}
+.CodeRay .inline{color:#000}
+.CodeRay .inline .inline{background:#ccc}
+.CodeRay .inline .inline .inline{background:#bbb}
+.CodeRay .inline .inline-delimiter{color:#d14}
+.CodeRay .inline-delimiter{color:#d14}
+.CodeRay .important{color:#555;font-weight:bold}
+.CodeRay .interpreted{color:#b2b}
+.CodeRay .instance-variable{color:#008080}
+.CodeRay .label{color:#970}
+.CodeRay .local-variable{color:#963}
+.CodeRay .octal{color:#40e}
+.CodeRay .predefined{color:#369}
+.CodeRay .preprocessor{color:#579}
+.CodeRay .pseudo-class{color:#555}
+.CodeRay .directive{font-weight:bold}
+.CodeRay .type{font-weight:bold}
+.CodeRay .predefined-type{color:inherit}
+.CodeRay .reserved,.CodeRay .keyword {color:#000;font-weight:bold}
+.CodeRay .key{color:#808}
+.CodeRay .key .delimiter{color:#606}
+.CodeRay .key .char{color:#80f}
+.CodeRay .value{color:#088}
+.CodeRay .regexp .delimiter{color:#808}
+.CodeRay .regexp .content{color:#808}
+.CodeRay .regexp .modifier{color:#808}
+.CodeRay .regexp .char{color:#d14}
+.CodeRay .regexp .function{color:#404;font-weight:bold}
+.CodeRay .string{color:#d20}
+.CodeRay .string .string .string{background:#ffd0d0}
+.CodeRay .string .content{color:#d14}
+.CodeRay .string .char{color:#d14}
+.CodeRay .string .delimiter{color:#d14}
+.CodeRay .shell{color:#d14}
+.CodeRay .shell .delimiter{color:#d14}
+.CodeRay .symbol{color:#990073}
+.CodeRay .symbol .content{color:#a60}
+.CodeRay .symbol .delimiter{color:#630}
+.CodeRay .tag{color:#008080}
+.CodeRay .tag-special{color:#d70}
+.CodeRay .variable{color:#036}
+.CodeRay .insert{background:#afa}
+.CodeRay .delete{background:#faa}
+.CodeRay .change{color:#aaf;background:#007}
+.CodeRay .head{color:#f8f;background:#505}
+.CodeRay .insert .insert{color:#080}
+.CodeRay .delete .delete{color:#800}
+.CodeRay .change .change{color:#66f}
+.CodeRay .head .head{color:#f4f}
+</style>
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -479,40 +570,40 @@ na imagem e que trocasse os quadrantes de posição;</p>
 <h3 id="_código_negativo">Código Negativo</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
-#include &lt;cv.h&gt;
-#include &lt;highgui.h&gt;
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;cv.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;highgui.h&gt;</span>
 
-using namespace cv;
-using namespace std;
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
 
-int main(){
+<span class="predefined-type">int</span> main(){
     Mat image;
 
 
-    int p1[2], p2[2];
+    <span class="predefined-type">int</span> p1[<span class="integer">2</span>], p2[<span class="integer">2</span>];
 
-    image = imread("biel.png", CV_LOAD_IMAGE_GRAYSCALE);
-    if(!image.data){
-        cout &lt;&lt; "Não foi possível abrir a imagem biel.png" &lt;&lt; endl;
+    image = imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">biel.png</span><span class="delimiter">&quot;</span></span>, CV_LOAD_IMAGE_GRAYSCALE);
+    <span class="keyword">if</span>(!image.data){
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Não foi possível abrir a imagem biel.png</span><span class="delimiter">&quot;</span></span> &lt;&lt; endl;
     }
 
-    cout &lt;&lt; "informe as coordenadas X e Y do ponto 1"&lt;&lt; endl;
-    cin &gt;&gt; p1[0] &gt;&gt; p1[1];
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">informe as coordenadas X e Y do ponto 1</span><span class="delimiter">&quot;</span></span>&lt;&lt; endl;
+    cin &gt;&gt; p1[<span class="integer">0</span>] &gt;&gt; p1[<span class="integer">1</span>];
 
-    cout &lt;&lt; "informe as coordenadas X e Y do ponto 2"&lt;&lt; endl;
-    cin &gt;&gt; p2[0] &gt;&gt; p2[1];
+    cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">informe as coordenadas X e Y do ponto 2</span><span class="delimiter">&quot;</span></span>&lt;&lt; endl;
+    cin &gt;&gt; p2[<span class="integer">0</span>] &gt;&gt; p2[<span class="integer">1</span>];
 
-    for (int i = p1[0]; i &lt; p2[0]; i++) {
-        for (int j = p1[1]; j &lt; p2[1]; j++) {
-            image.at&lt;uchar&gt;(i,j) = 255 - image.at&lt;uchar&gt;(i,j);
+    <span class="keyword">for</span> (<span class="predefined-type">int</span> i = p1[<span class="integer">0</span>]; i &lt; p2[<span class="integer">0</span>]; i++) {
+        <span class="keyword">for</span> (<span class="predefined-type">int</span> j = p1[<span class="integer">1</span>]; j &lt; p2[<span class="integer">1</span>]; j++) {
+            image.at&lt;uchar&gt;(i,j) = <span class="integer">255</span> - image.at&lt;uchar&gt;(i,j);
         }
     }
 
-    imshow("janela", image);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">janela</span><span class="delimiter">&quot;</span></span>, image);
     waitKey();
 
-    return 0;
+    <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
 </div>
 </div>
@@ -527,48 +618,48 @@ int main(){
 <h3 id="_código_troca_regiões">Código Troca Regiões</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;iostream&gt;
-#include &lt;cv.h&gt;
-#include &lt;highgui.h&gt;
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;cv.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;highgui.h&gt;</span>
 
-using namespace cv;
-using namespace std;
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
 
-int main(int argc, char** argv){
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv){
 
     Mat img;
 
-    img = imread("biel.png", CV_LOAD_IMAGE_GRAYSCALE);
+    img = imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">biel.png</span><span class="delimiter">&quot;</span></span>, CV_LOAD_IMAGE_GRAYSCALE);
 
-    if(!img.data){
-        cout &lt;&lt; "Não foi possível carregar a imagem" &lt;&lt;endl;
+    <span class="keyword">if</span>(!img.data){
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Não foi possível carregar a imagem</span><span class="delimiter">&quot;</span></span> &lt;&lt;endl;
     }
 
-    int row, col;
+    <span class="predefined-type">int</span> row, col;
 
     row = img.rows;
     col = img.cols;
-    int aux;
-    cout &lt;&lt; row &lt;&lt; " " &lt;&lt; col;
+    <span class="predefined-type">int</span> aux;
+    cout &lt;&lt; row &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content"> </span><span class="delimiter">&quot;</span></span> &lt;&lt; col;
 
-    for(int i=0; i &lt; row-1; i++){
-        for(int j=0; j&lt;col-1; j++){
-            if(i &lt; ((row/2)) &amp;&amp;  j &lt; (col/2)){
+    <span class="keyword">for</span>(<span class="predefined-type">int</span> i=<span class="integer">0</span>; i &lt; row-<span class="integer">1</span>; i++){
+        <span class="keyword">for</span>(<span class="predefined-type">int</span> j=<span class="integer">0</span>; j&lt;col-<span class="integer">1</span>; j++){
+            <span class="keyword">if</span>(i &lt; ((row/<span class="integer">2</span>)) &amp;&amp;  j &lt; (col/<span class="integer">2</span>)){
                 aux = img.at&lt;uchar&gt;(i,j);
-                img.at&lt;uchar&gt;(i,j) = img.at&lt;uchar&gt;((row/2)+i,(col/2)+j);
-                img.at&lt;uchar&gt;((row/2)+i,(col/2)+j) = aux;
+                img.at&lt;uchar&gt;(i,j) = img.at&lt;uchar&gt;((row/<span class="integer">2</span>)+i,(col/<span class="integer">2</span>)+j);
+                img.at&lt;uchar&gt;((row/<span class="integer">2</span>)+i,(col/<span class="integer">2</span>)+j) = aux;
             }
-            else if(i &gt;= (row/2)  &amp;&amp; j &gt;= (col/2)){
-                aux = img.at&lt;uchar&gt;(i - (row/2), j);
-                img.at&lt;uchar&gt;(i - (row/2), j) = img.at&lt;uchar&gt;(i, j-(col/2));
-                img.at&lt;uchar&gt;(i, j - (col/2))= aux;
+            <span class="keyword">else</span> <span class="keyword">if</span>(i &gt;= (row/<span class="integer">2</span>)  &amp;&amp; j &gt;= (col/<span class="integer">2</span>)){
+                aux = img.at&lt;uchar&gt;(i - (row/<span class="integer">2</span>), j);
+                img.at&lt;uchar&gt;(i - (row/<span class="integer">2</span>), j) = img.at&lt;uchar&gt;(i, j-(col/<span class="integer">2</span>));
+                img.at&lt;uchar&gt;(i, j - (col/<span class="integer">2</span>))= aux;
              }
         }
     }
 
-    imshow("janela", img);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">janela</span><span class="delimiter">&quot;</span></span>, img);
     waitKey();
-    return 0;
+    <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
 </div>
 </div>
@@ -580,7 +671,7 @@ int main(int argc, char** argv){
 <div class="sectionbody">
 <div class="paragraph">
 <p>Os códigos aqui não estão apresentando a saída pois são streams de vídeos da webcam. Porém, pode-se compilar os códigos usando
-o arquivo <a href="Makefile">Makefile</a>.</p>
+o arquivo Makefile.</p>
 </div>
 <div class="paragraph">
 <p>No código de equalização bastou usar a função <em>equalizeHist()</em> da biblioteca OpenCV passando as matrizes de fonte e de destino.</p>
@@ -589,32 +680,32 @@ o arquivo <a href="Makefile">Makefile</a>.</p>
 <h3 id="_código_equalização">Código Equalização</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;opencv2/opencv.hpp&gt;
-#include &lt;iostream&gt;
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
 
-using namespace cv;
-using namespace std;
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
 
-int main(int argc, char const *argv[]) {
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span> <span class="directive">const</span> *argv[]) {
     Mat src, dest;
     VideoCapture cap;
 
-    cap.open(0);
+    cap.open(<span class="integer">0</span>);
 
-    if( !cap.isOpened() ){
-        cout&lt;&lt;"câmera indisponível"&lt;&lt;endl;
-        return -1;
+    <span class="keyword">if</span>( !cap.isOpened() ){
+        cout&lt;&lt;<span class="string"><span class="delimiter">&quot;</span><span class="content">câmera indisponível</span><span class="delimiter">&quot;</span></span>&lt;&lt;endl;
+        <span class="keyword">return</span> -<span class="integer">1</span>;
     }
 
-    while(true){
+    <span class="keyword">while</span>(<span class="predefined-constant">true</span>){
         cap &gt;&gt; src;
         cvtColor( src, src, COLOR_BGR2GRAY );
         equalizeHist( src, dest );
-        imshow( "Source", src );
-        imshow( "Equalized", dest );
-        if(waitKey(30) &gt;= 0) break;
+        imshow( <span class="string"><span class="delimiter">&quot;</span><span class="content">Source</span><span class="delimiter">&quot;</span></span>, src );
+        imshow( <span class="string"><span class="delimiter">&quot;</span><span class="content">Equalized</span><span class="delimiter">&quot;</span></span>, dest );
+        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) &gt;= <span class="integer">0</span>) <span class="keyword">break</span>;
     }
-    return 0;
+    <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
 </div>
 </div>
@@ -627,88 +718,88 @@ Após isso, foi usada a função <em>compareHist()</em> para saber o grau de cor
 <h3 id="_código_motion_detector">Código Motion Detector</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-cpp" data-lang="cpp">#include &lt;opencv2/opencv.hpp&gt;
-#include &lt;iostream&gt;
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
 
 
-using namespace cv;
-using namespace std;
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
 
-int main(int argc, char const *argv[]) {
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span> <span class="directive">const</span> *argv[]) {
 
     Mat src_base, hsv_base;
-    //int width, height;
+    <span class="comment">//int width, height;</span>
     VideoCapture cap;
     vector&lt;Mat&gt; planes;
     Mat histR, histG;
-    int nbins = 64;
-    float range[] = {0, 256};
-    const float *histrange = { range };
-    bool uniform = true;
-    bool acummulate = false;
+    <span class="predefined-type">int</span> nbins = <span class="integer">64</span>;
+    <span class="predefined-type">float</span> range[] = {<span class="integer">0</span>, <span class="integer">256</span>};
+    <span class="directive">const</span> <span class="predefined-type">float</span> *histrange = { range };
+    <span class="predefined-type">bool</span> uniform = <span class="predefined-constant">true</span>;
+    <span class="predefined-type">bool</span> acummulate = <span class="predefined-constant">false</span>;
 
-    cap.open(0);
+    cap.open(<span class="integer">0</span>);
 
-    if(!cap.isOpened())
+    <span class="keyword">if</span>(!cap.isOpened())
     {
-        cout &lt;&lt; "Câmera indisponível" &lt;&lt; endl;
-        return -1;
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">Câmera indisponível</span><span class="delimiter">&quot;</span></span> &lt;&lt; endl;
+        <span class="keyword">return</span> -<span class="integer">1</span>;
     }
 
-    int histw = nbins, histh = nbins/2;
+    <span class="predefined-type">int</span> histw = nbins, histh = nbins/<span class="integer">2</span>;
 
-    Mat histImgR(histh, histw, CV_8UC3, Scalar(0,0,0));
+    Mat histImgR(histh, histw, CV_8UC3, Scalar(<span class="integer">0</span>,<span class="integer">0</span>,<span class="integer">0</span>));
 
 
-    int cont=0;
+    <span class="predefined-type">int</span> cont=<span class="integer">0</span>;
 
     cap &gt;&gt; src_base;
 
     split (src_base, planes);
 
-    double base;
+    <span class="predefined-type">double</span> base;
 
-    calcHist(&amp;planes[0], 1, 0, Mat(), histG, 1,
+    calcHist(&amp;planes[<span class="integer">0</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histG, <span class="integer">1</span>,
              &amp;nbins, &amp;histrange,
              uniform, acummulate);
 
-    normalize(histG, histG, 0, histImgR.rows, NORM_MINMAX, -1, Mat());
+    normalize(histG, histG, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
 
-    while(true){
+    <span class="keyword">while</span>(<span class="predefined-constant">true</span>){
 
         cap &gt;&gt; src_base;
         split (src_base, planes);
-        while(cont &lt; 10000){
+        <span class="keyword">while</span>(cont &lt; <span class="integer">10000</span>){
             cont++;
         }
 
-        calcHist(&amp;planes[0], 1, 0, Mat(), histR, 1,
+        calcHist(&amp;planes[<span class="integer">0</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histR, <span class="integer">1</span>,
                  &amp;nbins, &amp;histrange,
                  uniform, acummulate);
 
-        normalize(histR, histR, 0, histImgR.rows, NORM_MINMAX, -1, Mat());
+        normalize(histR, histR, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
 
         base = compareHist( histG, histR, CV_COMP_CORREL);
-        //cout &lt;&lt; base &lt;&lt; endl;
+        <span class="comment">//cout &lt;&lt; base &lt;&lt; endl;</span>
 
-        calcHist(&amp;planes[0], 1, 0, Mat(), histG, 1,
+        calcHist(&amp;planes[<span class="integer">0</span>], <span class="integer">1</span>, <span class="integer">0</span>, Mat(), histG, <span class="integer">1</span>,
                  &amp;nbins, &amp;histrange,
                  uniform, acummulate);
 
-        normalize(histG, histG, 0, histImgR.rows, NORM_MINMAX, -1, Mat());
+        normalize(histG, histG, <span class="integer">0</span>, histImgR.rows, NORM_MINMAX, -<span class="integer">1</span>, Mat());
 
-        if(base &lt; 0.996){
-            cout &lt;&lt; "detectou" &lt;&lt; endl;
-            cout &lt;&lt; "\n" &lt;&lt; endl;
-        }else{
-            cout &lt;&lt; "sem movimento" &lt;&lt; endl;
+        <span class="keyword">if</span>(base &lt; <span class="float">0</span><span class="float">.996</span>){
+            cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">detectou</span><span class="delimiter">&quot;</span></span> &lt;&lt; endl;
+            cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="char">\n</span><span class="delimiter">&quot;</span></span> &lt;&lt; endl;
+        }<span class="keyword">else</span>{
+            cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">sem movimento</span><span class="delimiter">&quot;</span></span> &lt;&lt; endl;
         }
-        imshow("image", src_base);
-        if(waitKey(30) &gt;= 0) break;
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">image</span><span class="delimiter">&quot;</span></span>, src_base);
+        <span class="keyword">if</span>(waitKey(<span class="integer">30</span>) &gt;= <span class="integer">0</span>) <span class="keyword">break</span>;
 
     }
 
-    return 0;
+    <span class="keyword">return</span> <span class="integer">0</span>;
 }</code></pre>
 </div>
 </div>
@@ -721,7 +812,7 @@ int main(int argc, char const *argv[]) {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-04-03 23:18:44 BRT
+Last updated 2017-04-08 00:30:30 BRT
 </div>
 </div>
 </body>
