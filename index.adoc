@@ -83,4 +83,23 @@ include::codes/questao6/filtroespacial.cpp[]
 image::img/filtroespacial.png[Laplaciano, 800, 600]
 
 
+=== Código Pontilhismo usando Algoritmo de Canny
+
+Nessa prática foram usadas duas técnicas para construir a imagem abaixo. Primeiro, foi usado o algoritmo de detecção de bordas de Canny, para selecionar a quantidade de bordas na imagem da praia. Um trackbar permite modificar o nível de filtragem do algoritmo.
+Após isso, usando apenas as bordas existentes na imagem e o limiar ajustado pelo trackbar, foram desenhados círculos nas bordas detectadas. O raio dos círculos é calculado usando alguns fatores de escala com o valor do trackbar.
+
+[source, cpp]
+----
+include::codes/pontilhismo-canny/pontilhismo.cpp[]
+----
+---
+[.left]
+.Resultado do Pontilhismo com Canny
+image::img/pontilhismo.png[Imagem transformada, 320, 240]
+
+[.left]
+.Imagem original
+image::img/praia.jpg[Imagem original, 320, 240]
+
+---
 The page to my repository is https://nerdroid.github.io[Github Nerdroid]

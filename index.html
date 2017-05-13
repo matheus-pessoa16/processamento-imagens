@@ -532,6 +532,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_código_equalização">Código Equalização</a></li>
 <li><a href="#_código_motion_detector">Código Motion Detector</a></li>
 <li><a href="#_código_filtro_espacial_i">Código Filtro Espacial I</a></li>
+<li><a href="#_código_pontilhismo_usando_algoritmo_de_canny">Código Pontilhismo usando Algoritmo de Canny</a></li>
 </ul>
 </li>
 </ul>
@@ -1073,6 +1074,158 @@ Mat applyGausLaplace(Mat cap, Mat maskGaus, Mat maskLap, <span class="predefined
 </div>
 <div class="title">Figure 4. Resultado do "Filtro Espacial" para o Laplaciano</div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_código_pontilhismo_usando_algoritmo_de_canny">Código Pontilhismo usando Algoritmo de Canny</h3>
+<div class="paragraph">
+<p>Nessa prática foram usadas duas técnicas para construir a imagem abaixo. Primeiro, foi usado o algoritmo de detecção de bordas de Canny, para selecionar a quantidade de bordas na imagem da praia. Um trackbar permite modificar o nível de filtragem do algoritmo.
+Após isso, usando apenas as bordas existentes na imagem e o limiar ajustado pelo trackbar, foram desenhados círculos nas bordas detectadas. O raio dos círculos é calculado usando alguns fatores de escala com o valor do trackbar.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;fstream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;iomanip&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;vector&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;algorithm&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;numeric&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;ctime&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;cstdlib&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+
+<span class="preprocessor">#define</span> STEP <span class="integer">5</span>
+<span class="preprocessor">#define</span> JITTER <span class="integer">3</span>
+<span class="preprocessor">#define</span> RAIO <span class="integer">3</span>
+
+
+<span class="predefined-type">int</span> top_slider = <span class="integer">1</span>;
+<span class="predefined-type">int</span> top_slider_max = <span class="integer">50</span>;
+
+<span class="predefined-type">char</span> TrackbarName[<span class="integer">50</span>];
+
+vector&lt;<span class="predefined-type">int</span>&gt; yrange;
+vector&lt;<span class="predefined-type">int</span>&gt; xrange;
+
+Mat image, border, points;
+
+
+<span class="directive">void</span> desenha(<span class="predefined-type">int</span> val){
+        <span class="predefined-type">int</span> gray, x, y;
+
+        <span class="predefined-type">int</span> width, height;
+
+
+        width=image.size().width;
+        height=image.size().height;
+
+        xrange.resize(height/STEP);
+        yrange.resize(width/STEP);
+
+        iota(xrange.begin(), xrange.end(), <span class="integer">0</span>);
+        iota(yrange.begin(), yrange.end(), <span class="integer">0</span>);
+
+        <span class="keyword">for</span>(uint i=<span class="integer">0</span>; i&lt;xrange.size(); i++){
+                xrange[i]= xrange[i]*STEP+STEP/<span class="integer">2</span>;
+        }
+
+        <span class="keyword">for</span>(uint i=<span class="integer">0</span>; i&lt;yrange.size(); i++){
+                yrange[i]= yrange[i]*STEP+STEP/<span class="integer">2</span>;
+        }
+
+        points = Mat(height, width, CV_8U, Scalar(<span class="integer">0</span>));
+
+        random_shuffle(xrange.begin(), xrange.end());
+
+        <span class="comment">//points = Scalar::all(0);</span>
+        image.copyTo(points, border);
+
+        <span class="predefined-type">int</span> aux;
+
+        <span class="keyword">for</span>(<span class="directive">auto</span> i : xrange){
+                random_shuffle(yrange.begin(), yrange.end());
+    <span class="keyword">for</span>(<span class="directive">auto</span> j : yrange){
+
+      x = i+rand()%(<span class="integer">2</span>*JITTER)-JITTER+<span class="integer">1</span>;
+      y = j+rand()%(<span class="integer">2</span>*JITTER)-JITTER+<span class="integer">1</span>;
+      gray = image.at&lt;uchar&gt;(x,y);
+
+                <span class="keyword">if</span>(val &gt;= <span class="integer">0</span> &amp;&amp; val &lt; <span class="integer">5</span>){
+                        aux = <span class="float">0</span><span class="float">.8</span>*val;
+                }<span class="keyword">else</span> <span class="keyword">if</span>(val &gt;= <span class="integer">5</span>){
+                        aux = val*<span class="float">0</span><span class="float">.2</span>;
+
+                }<span class="keyword">else</span>{
+                        aux = <span class="integer">1</span>;
+                }
+
+
+      circle(points,
+             cv::Point(y,x),
+             aux,
+             CV_RGB(gray,gray,gray),
+             -<span class="integer">1</span>,
+             CV_AA);
+    }
+  }
+        imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">pontos</span><span class="delimiter">&quot;</span></span>,points);
+}
+
+
+<span class="directive">void</span> on_trackbar_canny(<span class="predefined-type">int</span>, <span class="directive">void</span>*){
+  Canny(image, border, top_slider, <span class="integer">3</span>*top_slider);
+  imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">canny</span><span class="delimiter">&quot;</span></span>, border);
+  desenha(top_slider);
+}
+
+
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argc, <span class="predefined-type">char</span>** argv){
+
+  image= imread(argv[<span class="integer">1</span>],CV_LOAD_IMAGE_GRAYSCALE);
+
+  srand(time(<span class="integer">0</span>));
+
+  <span class="keyword">if</span>(!image.data){
+        cout &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content">nao abriu</span><span class="delimiter">&quot;</span></span> &lt;&lt; argv[<span class="integer">1</span>] &lt;&lt; endl;
+    cout &lt;&lt; argv[<span class="integer">0</span>] &lt;&lt; <span class="string"><span class="delimiter">&quot;</span><span class="content"> imagem.jpg</span><span class="delimiter">&quot;</span></span>;
+    exit(<span class="integer">0</span>);
+  }
+
+  sprintf( TrackbarName, <span class="string"><span class="delimiter">&quot;</span><span class="content">Threshold inferior</span><span class="delimiter">&quot;</span></span>, top_slider_max );
+
+  namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">canny</span><span class="delimiter">&quot;</span></span>,<span class="integer">1</span>);
+  createTrackbar( TrackbarName, <span class="string"><span class="delimiter">&quot;</span><span class="content">canny</span><span class="delimiter">&quot;</span></span>,
+                &amp;top_slider,
+                top_slider_max,
+                on_trackbar_canny );
+
+
+
+        on_trackbar_canny(top_slider, <span class="integer">0</span> );
+
+        waitKey();
+          imwrite(<span class="string"><span class="delimiter">&quot;</span><span class="content">cannyborders.png</span><span class="delimiter">&quot;</span></span>, points);
+  <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<hr>
+<div class="imageblock left">
+<div class="content">
+<img src="img/pontilhismo.png" alt="Imagem transformada" width="320" height="240">
+</div>
+<div class="title">Figure 5. Resultado do Pontilhismo com Canny</div>
+</div>
+<div class="imageblock left">
+<div class="content">
+<img src="img/praia.jpg" alt="Imagem original" width="320" height="240">
+</div>
+<div class="title">Figure 6. Imagem original</div>
+</div>
+<hr>
 <div class="paragraph">
 <p>The page to my repository is <a href="https://nerdroid.github.io">Github Nerdroid</a></p>
 </div>
@@ -1082,7 +1235,7 @@ Mat applyGausLaplace(Mat cap, Mat maskGaus, Mat maskLap, <span class="predefined
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-04-08 00:59:00 BRT
+Last updated 2017-05-13 16:36:33 BRT
 </div>
 </div>
 </body>
