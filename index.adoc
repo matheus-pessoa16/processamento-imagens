@@ -82,6 +82,26 @@ include::codes/questao6/filtroespacial.cpp[]
 .Resultado do "Filtro Espacial" para o Laplaciano
 image::img/filtroespacial.png[Laplaciano, 800, 600]
 
+=== Código Filtro Homomórfico
+
+O código abaixo trata-se do filtro Homomórfico usando a Transformada Rápida de Fourier. Alguns parâmetros são ajustados pelos trackbars para melhorar a iluminação na imagem. O resultado da filtragem está abaixo do código.
+
+[source, cpp]
+----
+include::codes/dft/dft.cpp[]
+----
+---
+[.left]
+.Resultado da Filtragem
+image::img/filtrada-dft.png[Imagem filtragem, 320, 240]
+
+[.left]
+.Imagem original
+image::img/original-dft.png[Imagem original, 320, 240]
+
+---
+
+
 
 === Código Pontilhismo usando Algoritmo de Canny
 

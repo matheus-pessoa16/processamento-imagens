@@ -532,6 +532,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_código_equalização">Código Equalização</a></li>
 <li><a href="#_código_motion_detector">Código Motion Detector</a></li>
 <li><a href="#_código_filtro_espacial_i">Código Filtro Espacial I</a></li>
+<li><a href="#_código_filtro_homomórfico">Código Filtro Homomórfico</a></li>
 <li><a href="#_código_pontilhismo_usando_algoritmo_de_canny">Código Pontilhismo usando Algoritmo de Canny</a></li>
 </ul>
 </li>
@@ -1076,6 +1077,213 @@ Mat applyGausLaplace(Mat cap, Mat maskGaus, Mat maskLap, <span class="predefined
 </div>
 </div>
 <div class="sect2">
+<h3 id="_código_filtro_homomórfico">Código Filtro Homomórfico</h3>
+<div class="paragraph">
+<p>O código abaixo trata-se do filtro Homomórfico usando a Transformada Rápida de Fourier. Alguns parâmetros são ajustados pelos trackbars para melhorar a iluminação na imagem. O resultado da filtragem está abaixo do código.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span class="preprocessor">#include</span> <span class="include">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;opencv2/opencv.hpp&gt;</span>
+<span class="preprocessor">#include</span> <span class="include">&lt;math.h&gt;</span>
+
+<span class="directive">using</span> <span class="keyword">namespace</span> cv;
+<span class="directive">using</span> <span class="keyword">namespace</span> std;
+
+<span class="predefined-type">int</span> height;
+
+<span class="predefined-type">int</span> dft_M, dft_N;
+
+<span class="predefined-type">float</span> MAX = <span class="integer">10</span><span class="float">0</span><span class="float">.0</span>;
+
+<span class="comment">// ilumunição, componete de baixa frequência</span>
+<span class="predefined-type">float</span> yl = <span class="integer">0</span>;
+<span class="predefined-type">float</span> max_yl = <span class="integer">100</span>;
+<span class="predefined-type">int</span> yl_slider = <span class="integer">0</span>;
+
+<span class="predefined-type">int</span> d0_slider = <span class="integer">0</span>;
+<span class="predefined-type">float</span> max_d0 = <span class="integer">256</span>;
+<span class="predefined-type">float</span> d0 = <span class="integer">0</span>;
+
+<span class="comment">// reflectância, componente de alta frequência</span>
+<span class="predefined-type">float</span> yh = <span class="integer">0</span>;
+<span class="predefined-type">float</span> max_yh = <span class="integer">100</span>;
+<span class="predefined-type">int</span> yh_slider = <span class="integer">0</span>;
+
+
+Mat image, imageDft, padded;
+
+<span class="predefined-type">char</span> TrackbarName[<span class="integer">50</span>];
+
+<span class="comment">// troca os quadranets da imagem</span>
+<span class="directive">void</span> trocaDFT(Mat&amp; image ){
+    Mat tmp, A, B, C, D;
+
+    <span class="comment">// corrige a imagem se ela for impar</span>
+    image = image(Rect(<span class="integer">0</span>, <span class="integer">0</span>, image.cols &amp; -<span class="integer">2</span>, image.rows &amp; -<span class="integer">2</span>));
+    <span class="predefined-type">int</span> cx = image.cols/<span class="integer">2</span>;
+    <span class="predefined-type">int</span> cy = image.rows/<span class="integer">2</span>;
+
+  <span class="comment">//troca os quadradantes</span>
+    A = image(Rect(<span class="integer">0</span>, <span class="integer">0</span>, cx, cy));
+    B = image(Rect(cx, <span class="integer">0</span>, cx, cy));
+    C = image(Rect(<span class="integer">0</span>, cy, cx, cy));
+    D = image(Rect(cx, cy, cx, cy));
+
+    <span class="comment">//monta a nova imagem</span>
+    A.copyTo(tmp);  D.copyTo(A);  tmp.copyTo(D);
+
+
+    C.copyTo(tmp);  B.copyTo(C);  tmp.copyTo(B);
+}
+
+<span class="directive">void</span> filtroHomomorfico() {
+    Mat filter = Mat(padded.size(), CV_32FC2, Scalar(<span class="integer">0</span>));
+    Mat tmp = Mat(dft_M, dft_N, CV_32F);
+
+    <span class="comment">//calculando os parametros do filtro</span>
+    <span class="keyword">for</span> (<span class="predefined-type">int</span> i = <span class="integer">0</span>; i &lt; dft_M; i++) {
+        <span class="keyword">for</span> (<span class="predefined-type">int</span> j = <span class="integer">0</span>; j &lt; dft_N; j++) {
+            <span class="predefined-type">float</span> d2 = pow(i - dft_M/<span class="float">2</span><span class="float">.0</span>, <span class="integer">2</span>) + pow(j - dft_N/<span class="float">2</span><span class="float">.0</span>, <span class="integer">2</span>);
+            <span class="predefined-type">float</span> exp = - (d2/pow(d0, <span class="integer">2</span>));
+            <span class="predefined-type">float</span> valor = (yh - yl)*(<span class="integer">1</span> - expf(exp) ) + yl;
+            tmp.at&lt;<span class="predefined-type">float</span>&gt; (i,j) = valor;
+        }
+    }
+
+    Mat comps[] = {tmp, tmp};
+    merge(comps, <span class="integer">2</span>, filter);
+
+    Mat dftClone = imageDft.clone();
+
+    <span class="comment">//multiplica as matrizes da imagem elemento por elemento</span>
+    mulSpectrums(dftClone,filter,dftClone,<span class="integer">0</span>);
+
+    <span class="comment">//troca novamente a imagem</span>
+    trocaDFT(dftClone);
+
+    <span class="comment">//faz a transformada inversa da imagem</span>
+    idft(dftClone, dftClone);
+
+    vector&lt;Mat&gt; planos;
+
+    <span class="comment">//separa os canasi da imagem, o planos[0] ficará com a imagem real</span>
+    split (dftClone, planos);
+
+    <span class="comment">// a imagem tem seus valores normalizados entre 0 e 1 para exibição</span>
+    normalize(planos[<span class="integer">0</span>], planos[<span class="integer">0</span>], <span class="integer">0</span>, <span class="integer">1</span>, CV_MINMAX);
+
+    <span class="predefined-type">char</span> bufferd0[<span class="integer">20</span>], bufferyh[<span class="integer">20</span>], bufferyl[<span class="integer">20</span>];
+    sprintf(bufferd0, <span class="string"><span class="delimiter">&quot;</span><span class="content">D0: %f</span><span class="delimiter">&quot;</span></span>, d0);
+    sprintf(bufferyh, <span class="string"><span class="delimiter">&quot;</span><span class="content">Yh: %f</span><span class="delimiter">&quot;</span></span>, yh);
+    sprintf(bufferyl, <span class="string"><span class="delimiter">&quot;</span><span class="content">Yl: %f</span><span class="delimiter">&quot;</span></span>, yl);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">Filtro Homomorfico</span><span class="delimiter">&quot;</span></span>, planos[<span class="integer">0</span>]);
+    imshow(<span class="string"><span class="delimiter">&quot;</span><span class="content">Original</span><span class="delimiter">&quot;</span></span>, image);
+}
+
+<span class="directive">void</span> on_trackbar_yl(<span class="predefined-type">int</span>, <span class="directive">void</span>*){
+    yl = (<span class="predefined-type">float</span>) yl_slider;
+    yl = max_yl*yl/MAX;
+    filtroHomomorfico();
+}
+
+<span class="directive">void</span> on_trackbar_d0(<span class="predefined-type">int</span>, <span class="directive">void</span> *){
+    d0 = d0_slider*max_d0/MAX;
+    filtroHomomorfico();
+}
+
+<span class="directive">void</span> on_trackbar_yh(<span class="predefined-type">int</span>, <span class="directive">void</span>*) {
+    yh = yh_slider*max_yh/MAX;
+
+    filtroHomomorfico();
+}
+
+<span class="predefined-type">int</span> main(<span class="predefined-type">int</span> argvc, <span class="predefined-type">char</span>** argv){
+    image = imread(<span class="string"><span class="delimiter">&quot;</span><span class="content">homomorfica.png</span><span class="delimiter">&quot;</span></span>);
+    cvtColor(image, image, CV_BGR2GRAY);
+
+    height = image.size().height;
+
+    <span class="comment">// identifica os tamanhos otimos para</span>
+    <span class="comment">// calculo do FFT</span>
+    dft_M = getOptimalDFTSize(image.rows);
+    dft_N = getOptimalDFTSize(image.cols);
+
+    <span class="comment">// realiza o padding da imagem</span>
+    Mat_&lt;<span class="predefined-type">float</span>&gt; zeros;
+    copyMakeBorder(image, padded, <span class="integer">0</span>,
+                   dft_M - image.rows, <span class="integer">0</span>,
+                   dft_N - image.cols,
+                   BORDER_CONSTANT, Scalar::all(<span class="integer">0</span>));
+
+    <span class="comment">// parte imaginaria da matriz complexa (preenchida com zeros)</span>
+    zeros = Mat_&lt;<span class="predefined-type">float</span>&gt;::zeros(padded.size());
+
+    <span class="comment">// prepara a matriz complexa para ser preenchida</span>
+    imageDft = Mat(padded.size(), CV_32FC2, Scalar(<span class="integer">0</span>));
+
+    copyMakeBorder(image, padded, <span class="integer">0</span>,
+                   dft_M - image.rows, <span class="integer">0</span>,
+                   dft_N - image.cols,
+                   BORDER_CONSTANT, Scalar::all(<span class="integer">0</span>));
+
+    Mat_&lt;<span class="predefined-type">float</span>&gt; realInput = Mat_&lt;<span class="predefined-type">float</span>&gt;(padded);
+
+    <span class="comment">// insere as duas componentes no array de matrizes</span>
+    vector&lt;Mat&gt; planos;
+    planos.push_back(realInput);
+    planos.push_back(zeros);
+
+    <span class="comment">// combina o array de matrizes em uma unica</span>
+    <span class="comment">// componente complexa</span>
+    merge(planos, imageDft);
+
+    <span class="comment">// calcula o dft</span>
+    dft(imageDft, imageDft);
+    trocaDFT(imageDft);
+
+    namedWindow(<span class="string"><span class="delimiter">&quot;</span><span class="content">Filtro Homomorfico</span><span class="delimiter">&quot;</span></span>, <span class="integer">1</span>);
+
+    sprintf( TrackbarName, <span class="string"><span class="delimiter">&quot;</span><span class="content">Yh</span><span class="delimiter">&quot;</span></span>);
+    createTrackbar( TrackbarName, <span class="string"><span class="delimiter">&quot;</span><span class="content">Filtro Homomorfico</span><span class="delimiter">&quot;</span></span>,
+                    &amp;yh_slider,
+                    MAX,
+                    on_trackbar_yh);
+
+    sprintf( TrackbarName, <span class="string"><span class="delimiter">&quot;</span><span class="content">YL</span><span class="delimiter">&quot;</span></span>);
+    createTrackbar( TrackbarName, <span class="string"><span class="delimiter">&quot;</span><span class="content">Filtro Homomorfico</span><span class="delimiter">&quot;</span></span>,
+                    &amp;yl_slider,
+                    MAX,
+                    on_trackbar_yl);
+
+    sprintf( TrackbarName, <span class="string"><span class="delimiter">&quot;</span><span class="content">D0</span><span class="delimiter">&quot;</span></span>);
+    createTrackbar( TrackbarName, <span class="string"><span class="delimiter">&quot;</span><span class="content">Filtro Homomorfico</span><span class="delimiter">&quot;</span></span>,
+                    &amp;d0_slider,
+                    MAX,
+                    on_trackbar_d0 );
+    filtroHomomorfico();
+    waitKey(<span class="integer">0</span>);
+
+    <span class="keyword">return</span> <span class="integer">0</span>;
+}</code></pre>
+</div>
+</div>
+<hr>
+<div class="imageblock left">
+<div class="content">
+<img src="img/filtrada-dft.png" alt="Imagem filtragem" width="320" height="240">
+</div>
+<div class="title">Figure 5. Resultado da Filtragem</div>
+</div>
+<div class="imageblock left">
+<div class="content">
+<img src="img/original-dft.png" alt="Imagem original" width="320" height="240">
+</div>
+<div class="title">Figure 6. Imagem original</div>
+</div>
+<hr>
+</div>
+<div class="sect2">
 <h3 id="_código_pontilhismo_usando_algoritmo_de_canny">Código Pontilhismo usando Algoritmo de Canny</h3>
 <div class="paragraph">
 <p>Nessa prática foram usadas duas técnicas para construir a imagem abaixo. Primeiro, foi usado o algoritmo de detecção de bordas de Canny, para selecionar a quantidade de bordas na imagem da praia. Um trackbar permite modificar o nível de filtragem do algoritmo.
@@ -1217,13 +1425,13 @@ Mat image, border, points;
 <div class="content">
 <img src="img/pontilhismo.png" alt="Imagem transformada" width="320" height="240">
 </div>
-<div class="title">Figure 5. Resultado do Pontilhismo com Canny</div>
+<div class="title">Figure 7. Resultado do Pontilhismo com Canny</div>
 </div>
 <div class="imageblock left">
 <div class="content">
 <img src="img/praia.jpg" alt="Imagem original" width="320" height="240">
 </div>
-<div class="title">Figure 6. Imagem original</div>
+<div class="title">Figure 8. Imagem original</div>
 </div>
 <hr>
 <div class="paragraph">
@@ -1235,7 +1443,7 @@ Mat image, border, points;
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-05-13 16:36:33 BRT
+Last updated 2017-05-14 20:09:07 BRT
 </div>
 </div>
 </body>
